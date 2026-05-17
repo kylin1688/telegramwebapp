@@ -63,7 +63,7 @@
         .form-group {
             margin-bottom: 18px;
             position: relative;
-            display: flex;          /* 🚀 全面开启弹性盒模型 */
+            display: flex;          /* 全面开启弹性盒模型 */
             align-items: center;    /* 标签与输入框上下垂直居中 */
             justify-content: space-between; /* 左右拉满两端对齐 */
             gap: 12px;              /* 黄金间距 */
@@ -75,35 +75,47 @@
             font-weight: 600;
             opacity: 0.9;
             margin-bottom: 0;       /* 消除下边距，防止上下错位 */
-            width: 32%;             /* 🚀 左侧文字标签分得 32% 的宽度占比 */
+            width: 32%;             /* 左侧文字标签分得 32% 的宽度占比 */
             flex-shrink: 0;         /* 强制死锁，防止标签文本被右侧挤压换行 */
             text-align: left;
         }
 
-        /* 统一控制右侧所有输入控件的固定宽度占比 */
+        /* 🚨 极其关键：将输入框、包裹盒、步进器全部对齐 68% 统一宽度 */
         .form-group input, 
         .form-group .select-wrapper, 
         .form-group .stepper {
-            width: 68%;             /* 🚀 右侧控件分得 68% 的宽度占比 */
+            width: 68% !important;   /* 🚀 强行彻底对齐宽度线 */
             box-sizing: border-box;
         }
 
         /* 输入控件基础样式重构 */
-        input, textarea, select {
-            padding: 12px 14px; box-sizing: border-box;
+        input, select, textarea {
+            width: 100%; padding: 12px 14px; box-sizing: border-box;
             border: 1px solid var(--input-border); border-radius: 10px; font-size: 15px;
             font-weight: 500; background-color: var(--input-bg); color: var(--text-color);
             outline: none; transition: all 0.2s ease; -webkit-appearance: none;
         }
-        input:focus, textarea:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             border-color: #3b82f6; box-shadow: 0 0 0 4px var(--focus-shadow);
         }
 
-        /* 下拉选择器外部容器 */
-        .select-wrapper { position: relative; }
+        /* 🚀 预计时长下拉框高级包裹盒：实现宽度100%继承且内部藏小箭头 */
+        .select-wrapper { position: relative; display: inline-block; }
+        .select-wrapper select {
+            padding-right: 35px;    /* 为右侧的小箭头挪出舒适的空位 */
+            cursor: pointer;
+        }
+        /* 🚀 完美的内嵌式小箭头：被牢牢锁在输入框内部右侧 */
         .select-wrapper::after {
-            content: "▼"; font-size: 11px; position: absolute; right: 14px; top: 50%;
-            transform: translateY(-50%); color: var(--hint-color); pointer-events: none; opacity: 0.6;
+            content: "▼"; 
+            font-size: 10px; 
+            position: absolute; 
+            right: 14px; 
+            top: 50%;
+            transform: translateY(-50%); 
+            color: var(--hint-color); 
+            pointer-events: none; /* 防止挡住下拉框的点击事件 */
+            opacity: 0.6;
         }
 
         /* 动态字数统计小标签 */
@@ -118,19 +130,18 @@
         .stepper-btn:active { background: rgba(128, 128, 128, 0.15); transform: scale(0.95); }
         .stepper-value { font-size: 14px; font-weight: 700; color: var(--text-color); text-align: center; flex: 1; }
 
-        /* ─── 🚨 核心优化：针对 textarea 详情介绍的例外机制 ─── */
-        /* 详情介绍字数多，横向挤在一起太丑，强制恢复为高级上下堆叠形态 */
+        /* 针对 textarea 详情介绍的例外机制 */
         .card .form-group.textarea-group {
             display: block;         /* 解除 flex，回归普通的块级上下堆叠 */
-            margin-top: 24px;       /* 增加一点顶部间距，显得错落有致 */
+            margin-top: 24px;       
         }
         .card .form-group.textarea-group label {
             width: 100%;            /* 标签文字重新拉满全屏 */
-            margin-bottom: 8px;     /* 留出舒适的下边距 */
+            margin-bottom: 8px;     
             display: block;
         }
         .card .form-group.textarea-group textarea {
-            width: 100%;            /* 文本域输入框 100% 优雅拉满卡片内壁 */
+            width: 100% !important; /* 强制拉满 */
             height: 90px; resize: none; font-family: inherit; display: block;
         }
 
@@ -200,29 +211,27 @@
     </div>
 
     <script>
-        // 应用 Telegram 暗黑/明亮自适应主题类
         if (window.Telegram && window.Telegram.WebApp) { document.body.classList.add('tg'); }
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
-        // 智能时间戳初始化
         const now = new Date();
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         document.getElementById('startTime').value = now.toISOString().slice(0, 16);
 
-        // 步进器核心防呆状态机
+        // 🚀 重新设计的逐一无缝添加、默认0人步进器状态机
         let slotsCount = 0;
         const stepperVal = document.getElementById('stepperValue');
         
         document.getElementById('minusBtn').addEventListener('click', () => {
             if (slotsCount > 0) {
-                slotsCount = slotsCount === 5 ? 0 : slotsCount - 1; // 降到5人后再减，直接变不限
+                slotsCount = slotsCount - 1; // 逐一单步递减
                 updateStepper();
             }
         });
         document.getElementById('plusBtn').addEventListener('click', () => {
             if (slotsCount < 99) {
-                slotsCount = slotsCount === 0 ? 5 : slotsCount + 1; // 从不限往上加，直接起步5人
+                slotsCount = slotsCount + 1; // 逐一单步递增
                 updateStepper();
             }
         });
@@ -230,7 +239,7 @@
             stepperVal.innerText = slotsCount === 0 ? "👥 不限人数 (0)" : `👥 限制 ${slotsCount} 人`;
         }
 
-        // 动态字数同步监听
+        // 动态字数监听
         const titleInput = document.getElementById('title');
         const titleCount = document.getElementById('titleCount');
         titleInput.addEventListener('input', () => {
@@ -246,19 +255,17 @@
             else { infoCount.classList.remove('danger'); }
         });
 
-        // 终极打包防御检查与数据跨端回传
+        // 打包回传
         document.getElementById('submitBtn').addEventListener('click', function() {
             const title = titleInput.value.trim();
             const info = infoInput.value.trim();
             const startVal = document.getElementById('startTime').value;
             const durationHours = parseInt(document.getElementById('duration').value);
             
-            // 拦截空数据
             if(!title || !info || !startVal) {
                 showWarning("请完整填写活动主题和详情介绍！");
                 return;
             }
-            // 绝对死锁字数，防止溢出
             if(title.length > 30 || info.length > 200) {
                 showWarning("内容超出字数限制，请精简后提交！");
                 return;
@@ -271,7 +278,6 @@
                 return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
             };
 
-            // 高度压缩的 JSON 骨架，彻底解决10KB死锁
             const resultData = {
                 title: title,
                 info: info,
@@ -280,7 +286,6 @@
                 end_time: formatTime(endDt)
             };
 
-            // 触发高级手机原生触感震动反馈
             if (tg.HapticFeedback) { tg.HapticFeedback.notificationOccurred('success'); }
             tg.sendData(JSON.stringify(resultData));
             tg.close();
