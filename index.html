@@ -19,6 +19,7 @@
             --danger-color: #ef4444;
         }
 
+        /* 完美融合 Telegram 原生主题色彩变量 */
         body.tg {
             --bg-color: var(--tg-theme-bg-color, #f4f6f9);
             --text-color: var(--tg-theme-text-color, #1f2937);
@@ -58,36 +59,82 @@
             margin-bottom: 24px;
         }
 
-        .form-group { margin-bottom: 18px; text-align: left; position: relative; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px; opacity: 0.9; }
+        /* ─── ⚖️ 弹性盒横向对齐排版 ─── */
+        .form-group {
+            margin-bottom: 18px;
+            position: relative;
+            display: flex;          /* 🚀 全面开启弹性盒模型 */
+            align-items: center;    /* 标签与输入框上下垂直居中 */
+            justify-content: space-between; /* 左右拉满两端对齐 */
+            gap: 12px;              /* 黄金间距 */
+        }
 
-        /* 输入框高级样式重构 */
+        /* 统一管理文字标签宽度 */
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 0;       /* 消除下边距，防止上下错位 */
+            width: 32%;             /* 🚀 左侧文字标签分得 32% 的宽度占比 */
+            flex-shrink: 0;         /* 强制死锁，防止标签文本被右侧挤压换行 */
+            text-align: left;
+        }
+
+        /* 统一控制右侧所有输入控件的固定宽度占比 */
+        .form-group input, 
+        .form-group .select-wrapper, 
+        .form-group .stepper {
+            width: 68%;             /* 🚀 右侧控件分得 68% 的宽度占比 */
+            box-sizing: border-box;
+        }
+
+        /* 输入控件基础样式重构 */
         input, textarea, select {
-            width: 100%; padding: 12px 14px; box-sizing: border-box;
+            padding: 12px 14px; box-sizing: border-box;
             border: 1px solid var(--input-border); border-radius: 10px; font-size: 15px;
             font-weight: 500; background-color: var(--input-bg); color: var(--text-color);
             outline: none; transition: all 0.2s ease; -webkit-appearance: none;
         }
-        textarea { resize: none; height: 90px; font-family: inherit; }
         input:focus, textarea:focus, select:focus {
             border-color: #3b82f6; box-shadow: 0 0 0 4px var(--focus-shadow);
         }
 
+        /* 下拉选择器外部容器 */
+        .select-wrapper { position: relative; }
+        .select-wrapper::after {
+            content: "▼"; font-size: 11px; position: absolute; right: 14px; top: 50%;
+            transform: translateY(-50%); color: var(--hint-color); pointer-events: none; opacity: 0.6;
+        }
+
         /* 动态字数统计小标签 */
         .counter-tag {
-            position: absolute; right: 4px; top: 0; font-size: 11px; color: var(--hint-color); font-weight: 500;
+            position: absolute; right: 4px; top: -16px; font-size: 11px; color: var(--hint-color); font-weight: 500;
         }
         .counter-tag.danger { color: var(--danger-color); font-weight: bold; }
 
         /* 高级数字步进器 UI */
-        .stepper { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 10px; padding: 4px; }
-        .stepper-btn { width: 40px; height: 40px; background: rgba(128, 128, 128, 0.1); border: none; border-radius: 8px; font-size: 20px; font-weight: bold; color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.1s; }
-        .stepper-btn:active { background: rgba(128, 128, 128, 0.2); transform: scale(0.95); }
-        .stepper-value { font-size: 15px; font-weight: 700; color: var(--text-color); text-align: center; flex: 1; }
+        .stepper { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 10px; padding: 3px; }
+        .stepper-btn { width: 36px; height: 36px; background: rgba(128, 128, 128, 0.08); border: none; border-radius: 8px; font-size: 18px; font-weight: bold; color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.1s; }
+        .stepper-btn:active { background: rgba(128, 128, 128, 0.15); transform: scale(0.95); }
+        .stepper-value { font-size: 14px; font-weight: 700; color: var(--text-color); text-align: center; flex: 1; }
 
-        .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        /* ─── 🚨 核心优化：针对 textarea 详情介绍的例外机制 ─── */
+        /* 详情介绍字数多，横向挤在一起太丑，强制恢复为高级上下堆叠形态 */
+        .card .form-group.textarea-group {
+            display: block;         /* 解除 flex，回归普通的块级上下堆叠 */
+            margin-top: 24px;       /* 增加一点顶部间距，显得错落有致 */
+        }
+        .card .form-group.textarea-group label {
+            width: 100%;            /* 标签文字重新拉满全屏 */
+            margin-bottom: 8px;     /* 留出舒适的下边距 */
+            display: block;
+        }
+        .card .form-group.textarea-group textarea {
+            width: 100%;            /* 文本域输入框 100% 优雅拉满卡片内壁 */
+            height: 90px; resize: none; font-family: inherit; display: block;
+        }
 
-        /* 动作区域 */
+        /* 底部固定动作区域 */
         .action-area { width: 100%; max-width: 440px; margin: 0 auto; }
         button.submit-btn {
             width: 100%; padding: 15px; background: var(--btn-color); color: var(--btn-text);
@@ -106,32 +153,33 @@
         
         <div class="card">
             <div class="form-group">
-                <label>📌 活动主题标题</label>
+                <label>📌 活动主题</label>
                 <span class="counter-tag" id="titleCount">0/30</span>
-                <input type="text" id="title" placeholder="给聚会起个响亮的名字..." maxlength="30" required>
+                <input type="text" id="title" placeholder="起个响亮的名字..." maxlength="30" required>
             </div>
 
-            <div class="row-grid">
-                <div class="form-group">
-                    <label>🛫 开始时间</label>
-                    <input type="datetime-local" id="startTime" required>
-                </div>
-                <div class="form-group">
-                    <label>⏱️ 预计时长</label>
+            <div class="form-group">
+                <label>🛫 开始时间</label>
+                <input type="datetime-local" id="startTime" required>
+            </div>
+
+            <div class="form-group">
+                <label>⏱️ 预计时长</label>
+                <div class="select-wrapper">
                     <select id="duration">
-                        <option value="1">1 小时</option>
-                        <option value="2" selected>2 小时</option>
-                        <option value="3">3 小时</option>
-                        <option value="4">4 小时</option>
-                        <option value="6">6 小时</option>
-                        <option value="12">12 小时</option>
-                        <option value="24">1 整天</option>
+                        <option value="1">1 小时 (快闪聚会)</option>
+                        <option value="2" selected>2 小时 (标准活动)</option>
+                        <option value="3">3 小时 (深度畅聊)</option>
+                        <option value="4">4 小时 (狂欢派对)</option>
+                        <option value="6">6 小时 (半天协同)</option>
+                        <option value="12">12 小时 (昼夜狂欢)</option>
+                        <option value="24">24 一整天 (周末度假)</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>👥 限制参与人数</label>
+                <label>👥 人数限制</label>
                 <div class="stepper">
                     <button type="button" class="stepper-btn" id="minusBtn">−</button>
                     <div class="stepper-value" id="stepperValue">👥 不限人数 (0)</div>
@@ -139,8 +187,8 @@
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 0;">
-                <label>💬 活动要求与详情详情</label>
+            <div class="form-group textarea-group">
+                <label>💬 活动要求与详情介绍</label>
                 <span class="counter-tag" id="infoCount">0/200</span>
                 <textarea id="info" placeholder="请简要介绍聚会内容、费用AA情况等要求（200字以内）..." maxlength="200" required></textarea>
             </div>
@@ -152,22 +200,23 @@
     </div>
 
     <script>
+        // 应用 Telegram 暗黑/明亮自适应主题类
         if (window.Telegram && window.Telegram.WebApp) { document.body.classList.add('tg'); }
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
-        // 时间动态初始化
+        // 智能时间戳初始化
         const now = new Date();
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         document.getElementById('startTime').value = now.toISOString().slice(0, 16);
 
-        // 步进器核心防呆逻辑
+        // 步进器核心防呆状态机
         let slotsCount = 0;
         const stepperVal = document.getElementById('stepperValue');
         
         document.getElementById('minusBtn').addEventListener('click', () => {
             if (slotsCount > 0) {
-                slotsCount = slotsCount === 5 ? 0 : slotsCount - 1; // 降到5人后，再减直接变不限
+                slotsCount = slotsCount === 5 ? 0 : slotsCount - 1; // 降到5人后再减，直接变不限
                 updateStepper();
             }
         });
@@ -181,7 +230,7 @@
             stepperVal.innerText = slotsCount === 0 ? "👥 不限人数 (0)" : `👥 限制 ${slotsCount} 人`;
         }
 
-        // 动态字数监听与染色拦截器
+        // 动态字数同步监听
         const titleInput = document.getElementById('title');
         const titleCount = document.getElementById('titleCount');
         titleInput.addEventListener('input', () => {
@@ -197,7 +246,7 @@
             else { infoCount.classList.remove('danger'); }
         });
 
-        // 提交终极防御检查
+        // 终极打包防御检查与数据跨端回传
         document.getElementById('submitBtn').addEventListener('click', function() {
             const title = titleInput.value.trim();
             const info = infoInput.value.trim();
@@ -209,7 +258,7 @@
                 showWarning("请完整填写活动主题和详情介绍！");
                 return;
             }
-            // 绝对死锁字数上限，防止溢出
+            // 绝对死锁字数，防止溢出
             if(title.length > 30 || info.length > 200) {
                 showWarning("内容超出字数限制，请精简后提交！");
                 return;
@@ -222,7 +271,7 @@
                 return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
             };
 
-            // 完美的精简版打包，彻底击碎10KB瓶颈
+            // 高度压缩的 JSON 骨架，彻底解决10KB死锁
             const resultData = {
                 title: title,
                 info: info,
@@ -231,6 +280,7 @@
                 end_time: formatTime(endDt)
             };
 
+            // 触发高级手机原生触感震动反馈
             if (tg.HapticFeedback) { tg.HapticFeedback.notificationOccurred('success'); }
             tg.sendData(JSON.stringify(resultData));
             tg.close();
