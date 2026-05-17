@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>配置活动时间轴</title>
+    <title>发起社区活动</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-         :root {
-            /* 预设防呆色彩（如果脱离 TG 环境会使用这套高级灰蓝调） */
+        :root {
             --bg-color: #f4f6f9;
             --text-color: #1f2937;
             --card-bg: rgba(255, 255, 255, 0.9);
@@ -18,9 +16,9 @@
             --input-border: #e5e7eb;
             --input-bg: #ffffff;
             --focus-shadow: rgba(59, 130, 246, 0.15);
+            --danger-color: #ef4444;
         }
-        /* 完美融合 Telegram 原生主题色彩变量 */
-        
+
         body.tg {
             --bg-color: var(--tg-theme-bg-color, #f4f6f9);
             --text-color: var(--tg-theme-text-color, #1f2937);
@@ -31,237 +29,217 @@
             --input-border: rgba(128, 128, 128, 0.2);
             --input-bg: var(--tg-theme-bg-color, #ffffff);
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 24px 16px;
+            padding: 16px 16px 24px 16px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             box-sizing: border-box;
-            justify-content: space-between;
             transition: background-color 0.3s, color 0.3s;
         }
-        
-        .container {
-            width: 100%;
-            max-width: 440px;
-            margin: 0 auto;
-        }
-        /* 顶部高级状态看板 */
-        
-        .header-panel {
-            text-align: center;
-            margin-bottom: 28px;
-            padding: 0 8px;
-        }
-        
-        h2 {
-            font-size: 24px;
-            font-weight: 800;
-            margin: 0 0 6px 0;
-            letter-spacing: -0.5px;
-        }
-        
-        .subtitle {
-            color: var(--hint-color);
-            font-size: 14px;
-            margin: 0;
-            font-weight: 400;
-        }
-        /* 表单卡片毛玻璃特效 */
-        
+
+        .container { width: 100%; max-width: 440px; margin: 0 auto; flex: 1; }
+        .header-panel { text-align: center; margin-bottom: 20px; }
+        h2 { font-size: 22px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; }
+        .subtitle { color: var(--hint-color); font-size: 13px; margin: 0; }
+
+        /* 毛玻璃高级卡片 */
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -3px rgba(0, 0, 0, 0.03);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px; padding: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 24px;
         }
-        
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
+
+        .form-group { margin-bottom: 18px; text-align: left; position: relative; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px; opacity: 0.9; }
+
+        /* 输入框高级样式重构 */
+        input, textarea, select {
+            width: 100%; padding: 12px 14px; box-sizing: border-box;
+            border: 1px solid var(--input-border); border-radius: 10px; font-size: 15px;
+            font-weight: 500; background-color: var(--input-bg); color: var(--text-color);
+            outline: none; transition: all 0.2s ease; -webkit-appearance: none;
         }
-        
-        .form-group:last-child {
-            margin-bottom: 0;
+        textarea { resize: none; height: 90px; font-family: inherit; }
+        input:focus, textarea:focus, select:focus {
+            border-color: #3b82f6; box-shadow: 0 0 0 4px var(--focus-shadow);
         }
-        
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-            opacity: 0.9;
+
+        /* 动态字数统计小标签 */
+        .counter-tag {
+            position: absolute; right: 4px; top: 0; font-size: 11px; color: var(--hint-color); font-weight: 500;
         }
-        /* 输入框高级重构 */
-        
-        input,
-        select {
-            width: 100%;
-            padding: 14px 16px;
-            box-sizing: border-box;
-            border: 1px solid var(--input-border);
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 500;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            outline: none;
-            transition: all 0.2s ease;
-            -webkit-appearance: none;
-            /* 抹平iOS原生怪异阴影 */
+        .counter-tag.danger { color: var(--danger-color); font-weight: bold; }
+
+        /* 高级数字步进器 UI */
+        .stepper { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 10px; padding: 4px; }
+        .stepper-btn { width: 40px; height: 40px; background: rgba(128, 128, 128, 0.1); border: none; border-radius: 8px; font-size: 20px; font-weight: bold; color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.1s; }
+        .stepper-btn:active { background: rgba(128, 128, 128, 0.2); transform: scale(0.95); }
+        .stepper-value { font-size: 15px; font-weight: 700; color: var(--text-color); text-align: center; flex: 1; }
+
+        .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* 动作区域 */
+        .action-area { width: 100%; max-width: 440px; margin: 0 auto; }
+        button.submit-btn {
+            width: 100%; padding: 15px; background: var(--btn-color); color: var(--btn-text);
+            border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); transition: all 0.2s;
         }
-        /* 自定义下拉箭头 */
-        
-        .select-wrapper {
-            position: relative;
-        }
-        
-        .select-wrapper::after {
-            content: "▼";
-            font-size: 12px;
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--hint-color);
-            pointer-events: none;
-            opacity: 0.7;
-        }
-        
-        input:focus,
-        select:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px var(--focus-shadow);
-        }
-        /* 悬浮动感提交大按钮 */
-        
-        .action-area {
-            margin-top: 40px;
-            width: 100%;
-        }
-        
-        button {
-            width: 100%;
-            padding: 16px;
-            background: var(--btn-color);
-            color: var(--btn-text);
-            border: none;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        button:active {
-            transform: scale(0.98);
-            opacity: 0.95;
-            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15);
-        }
+        button.submit-btn:active { transform: scale(0.98); opacity: 0.95; }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="header-panel">
-            <h2>📅 活动时间轴</h2>
-            <p class="subtitle">请配置聚会开始的具体时间与持续时长</p>
+            <h2>📝 完善活动信息</h2>
+            <p class="subtitle">请一气呵成填写下方核心表单</p>
         </div>
-
+        
         <div class="card">
             <div class="form-group">
-                <label>🛫 开始日期与时间</label>
-                <input type="datetime-local" id="startTime" required>
+                <label>📌 活动主题标题</label>
+                <span class="counter-tag" id="titleCount">0/30</span>
+                <input type="text" id="title" placeholder="给聚会起个响亮的名字..." maxlength="30" required>
             </div>
 
-            <div class="form-group">
-                <label>⏱️ 聚会预计时长</label>
-                <div class="select-wrapper">
+            <div class="row-grid">
+                <div class="form-group">
+                    <label>🛫 开始时间</label>
+                    <input type="datetime-local" id="startTime" required>
+                </div>
+                <div class="form-group">
+                    <label>⏱️ 预计时长</label>
                     <select id="duration">
-                        <option value="1">1 小时 (快闪聚会)</option>
-                        <option value="2" selected>2 小时 (标准聚会)</option>
-                        <option value="3">3 小时 (深度畅聊)</option>
-                        <option value="4">4 小时 (狂欢派对)</option>
-                        <option value="6">6 小时 (半天活动)</option>
-                        <option value="12">12 小时 (昼夜狂欢)</option>
-                        <option value="24">24 一整天 (周末度假)</option>
+                        <option value="1">1 小时</option>
+                        <option value="2" selected>2 小时</option>
+                        <option value="3">3 小时</option>
+                        <option value="4">4 小时</option>
+                        <option value="6">6 小时</option>
+                        <option value="12">12 小时</option>
+                        <option value="24">1 整天</option>
                     </select>
                 </div>
             </div>
+
+            <div class="form-group">
+                <label>👥 限制参与人数</label>
+                <div class="stepper">
+                    <button type="button" class="stepper-btn" id="minusBtn">−</button>
+                    <div class="stepper-value" id="stepperValue">👥 不限人数 (0)</div>
+                    <button type="button" class="stepper-btn" id="plusBtn">+</button>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>💬 活动要求与详情详情</label>
+                <span class="counter-tag" id="infoCount">0/200</span>
+                <textarea id="info" placeholder="请简要介绍聚会内容、费用AA情况等要求（200字以内）..." maxlength="200" required></textarea>
+            </div>
         </div>
     </div>
 
-    <div class="action-area class=" container "">
-        <button id="submitBtn">⏰ 确认时间并锁定</button>
+    <div class="action-area">
+        <button class="submit-btn" id="submitBtn">⏰ 锁定信息并下一步</button>
     </div>
 
     <script>
-        // 检测并应用 TG 的暗黑/明亮主题样式类
-        if (window.Telegram && window.Telegram.WebApp) {
-            document.body.classList.add('tg');
-        }
-
+        if (window.Telegram && window.Telegram.WebApp) { document.body.classList.add('tg'); }
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand(); // 原生小程序无缝拉满全屏
+        tg.ready(); tg.expand();
 
-        // 智能填入当前系统精准时间
+        // 时间动态初始化
         const now = new Date();
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         document.getElementById('startTime').value = now.toISOString().slice(0, 16);
 
-        // 按钮点击核心动效与数据回传逻辑
+        // 步进器核心防呆逻辑
+        let slotsCount = 0;
+        const stepperVal = document.getElementById('stepperValue');
+        
+        document.getElementById('minusBtn').addEventListener('click', () => {
+            if (slotsCount > 0) {
+                slotsCount = slotsCount === 5 ? 0 : slotsCount - 1; // 降到5人后，再减直接变不限
+                updateStepper();
+            }
+        });
+        document.getElementById('plusBtn').addEventListener('click', () => {
+            if (slotsCount < 99) {
+                slotsCount = slotsCount === 0 ? 5 : slotsCount + 1; // 从不限往上加，直接起步5人
+                updateStepper();
+            }
+        });
+        function updateStepper() {
+            stepperVal.innerText = slotsCount === 0 ? "👥 不限人数 (0)" : `👥 限制 ${slotsCount} 人`;
+        }
+
+        // 动态字数监听与染色拦截器
+        const titleInput = document.getElementById('title');
+        const titleCount = document.getElementById('titleCount');
+        titleInput.addEventListener('input', () => {
+            titleCount.innerText = `${titleInput.value.length}/30`;
+        });
+
+        const infoInput = document.getElementById('info');
+        const infoCount = document.getElementById('infoCount');
+        infoInput.addEventListener('input', () => {
+            const len = infoInput.value.length;
+            infoCount.innerText = `${len}/200`;
+            if (len >= 190) { infoCount.classList.add('danger'); } 
+            else { infoCount.classList.remove('danger'); }
+        });
+
+        // 提交终极防御检查
         document.getElementById('submitBtn').addEventListener('click', function() {
+            const title = titleInput.value.trim();
+            const info = infoInput.value.trim();
             const startVal = document.getElementById('startTime').value;
             const durationHours = parseInt(document.getElementById('duration').value);
-
-            if (!startVal) {
-                if (tg.showPopup) {
-                    tg.showPopup({
-                        title: "提示",
-                        message: "请先选择合法的开始时间！",
-                        buttons: [{
-                            type: "ok"
-                        }]
-                    });
-                } else {
-                    alert("请先选择合法的开始时间！");
-                }
+            
+            // 拦截空数据
+            if(!title || !info || !startVal) {
+                showWarning("请完整填写活动主题和详情介绍！");
+                return;
+            }
+            // 绝对死锁字数上限，防止溢出
+            if(title.length > 30 || info.length > 200) {
+                showWarning("内容超出字数限制，请精简后提交！");
                 return;
             }
 
             const startDt = new Date(startVal);
             const endDt = new Date(startDt.getTime() + durationHours * 60 * 60 * 1000);
-
             const formatTime = (dt) => {
                 const pad = (num) => String(num).padStart(2, '0');
                 return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
             };
 
+            // 完美的精简版打包，彻底击碎10KB瓶颈
             const resultData = {
+                title: title,
+                info: info,
+                slots: slotsCount,
                 start_time: formatTime(startDt),
                 end_time: formatTime(endDt)
             };
 
-            // 🌟 触发手机原生的短促震动反馈（让用户爽一下）
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.notificationOccurred('success');
-            }
-
-            // 把干净的 JSON 拍回给机器人，并平滑关闭
+            if (tg.HapticFeedback) { tg.HapticFeedback.notificationOccurred('success'); }
             tg.sendData(JSON.stringify(resultData));
             tg.close();
         });
+
+        function showWarning(msg) {
+            if(tg.showPopup) { tg.showPopup({title: "检查提示", message: msg, buttons: [{type: "ok"}]}); } 
+            else { alert(msg); }
+        }
     </script>
 </body>
-
-</html> 
+</html>
