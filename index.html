@@ -57,51 +57,10 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 24px;
         }
-        
-        /* ─── ⚖️ 完美融合版：表单组 Flex 横向一气呵成排版 ─── */
-        .form-group {
-            margin-bottom: 18px;
-            position: relative;
-            display: flex;          /* 🚀 全面开启弹性盒模型 */
-            align-items: center;    /* 标签与输入框上下垂直居中 */
-            justify-content: space-between; /* 左右拉满两端对齐 */
-            gap: 12px;              /* 标签和输入控件之间的黄金间距 */
-        }
-        
-        /* 统一管理标签样式 */
-        .form-group label {
-            font-size: 13px;
-            font-weight: 600;
-            opacity: 0.9;
-            margin-bottom: 0;       /* 消除原本的下边距，防止上下错位 */
-            width: 32%;             /* 🚀 左侧文字标签分得 32% 的宽度占比 */
-            flex-shrink: 0;         /* 强制死锁，防止标签文本被右侧挤压换行 */
-            text-align: left;
-        }
-        
-        /* 统一控制右侧所有输入控件的宽度占比 */
-        .form-group input, 
-        .form-group .select-wrapper, 
-        .form-group .stepper {
-            width: 68%;             /* 🚀 右侧控件分得 68% 的宽度占比 */
-        }
-        
-        /* ─── 🚨 核心优化：针对 textarea 详情介绍的例外机制 ─── */
-        /* 详情介绍字数多，横向挤在一起太丑，强制恢复为高级上下堆叠形态 */
-        .card .form-group:last-child {
-            display: block;         /* 解除 flex，回归普通的块级上下堆叠 */
-        }
-        
-        .card .form-group:last-child label {
-            width: 100%;            /* 标签文字重新拉满全屏 */
-            margin-bottom: 8px;     /* 留出舒适的下边距 */
-            display: block;
-        }
-        
-        .card .form-group:last-child textarea {
-            width: 100%;            /* 文本域输入框 100% 优雅拉满卡片内壁 */
-            display: block;
-        }
+
+        .form-group { margin-bottom: 18px; text-align: left; position: relative; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px; opacity: 0.9; }
+
         /* 输入框高级样式重构 */
         input, textarea, select {
             width: 100%; padding: 12px 14px; box-sizing: border-box;
